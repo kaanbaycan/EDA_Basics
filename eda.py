@@ -41,3 +41,24 @@ def breush_pagan(dataframe,target):
                 output_df.loc[col] = [breushpagan_test[0],round(breushpagan_test[1],5),breushpagan_test[2],round(breushpagan_test[3],5)]
     return output_df
 
+def anova(dataframe, target):
+    import pandas as pd
+    import numpy as np
+    from scipy import stats
+    
+    output_df = pd.DataFrame(columns = ["F_stat", "p_value~"])    
+    for col in dataframe:
+        if pd.api.types.is_numeric_dtype(dataframe[col]) == False:
+            categories = dataframe[col].unique()     
+            if len(categories) >= 2:
+                cat_val = []
+                for cat in categories:
+                    cat_val.append(dataframe[dataframe[col] == cat][target])
+  
+            
+            f,p = stats.f_oneway(*cat_val)
+            output_df.loc[col] = [f,round(p,6)]
+
+
+   
+    return output_df.sort_values(by = "F_stat", ascending=False)
