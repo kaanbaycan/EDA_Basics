@@ -1,3 +1,11 @@
+def df_problem1(dataframe):
+    problematic_cols = []
+    for col in dataframe.columns:
+        numbers = ["0","1","2","3","4","5","6","7","8","9"]
+        if col[0] in numbers :
+            problematic_cols.append(col)
+    return problematic_cols
+    
 def unistats(df,sorted):
     import pandas as pd
     pd.set_option("display.max_rows",100)
