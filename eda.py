@@ -128,3 +128,38 @@ def histogram(dataframe,feature, target):
         ax =  sns.histplot(dataframe, x = target, hue = feature, kde =True)
         ax.text( 1, 0.1, string, fontsize = 12, transform = plt.gcf().transFigure)
         plt.show()
+
+def biv_stats(dataframe, target):
+    for col in dataframe:
+        if pd.api.types.is_numeric_dtype(dataframe[col]):
+            ed.scatter(dataframe,col,target)
+    for col in dataframe:
+        ed.histogram(dataframe,col,target)
+    for col in dataframe:
+        ed.barplots(dataframe,col,target)
+
+def cleaner(dataframe):
+    import eda as ed
+    dataframe.dropna(axis=1, inplace=True)
+    dataframe.columns = dataframe.columns.str.strip()
+    ed.df_problem_solver1(dataframe)
+    return dataframe
+
+def dummy(dataframe):
+    for col in dataframe:
+        if not pd.api.types.is_numeric_dtype(dataframe[col]):
+            dataframe = dataframe.join(pd.get_dummies(dataframe[col], prefix = col, drop_first = True))
+    dataframe = dataframe.select_dtypes(np.number)
+    return dataframe
+
+def regression(dataframe,target):   
+    y = dataframe[target]
+    x = dataframe.drop(target, axis = 1).assign(const=1)
+    results = sm.OLS(y,x).fit()
+    return results
+
+def regression_stats_df(results):
+    df_stats = pd.DataFrame({"coef":results.params, "t":abs(results.tvalues), "p":results.pvalues})
+    #df_stats.drop("const", axis=1, inplace = True)
+    df_stats = df_stats.sort_values(by = ["t","p"])
+    return df_stats
