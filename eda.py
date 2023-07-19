@@ -163,3 +163,17 @@ def regression_stats_df(results):
     #df_stats.drop("const", axis=1, inplace = True)
     df_stats = df_stats.sort_values(by = ["t","p"])
     return df_stats
+
+def collinear_columns(dataframe):
+    correlation = dataframe.corr()
+    collinear_columns = {"Columns":"correlation"}
+    for column1 in correlation.columns:
+        for i,value in enumerate(correlation.loc[column1]):
+            if abs(value) >= 0.7 and abs(value) != 1:
+                collinear_columns.update({f"{column1}-{correlation.columns[i]}":value})
+    return collinear_columns
+
+def best_parameters(model):
+    df_parameters = pd.DataFrame({"coef":model.params, "t": abs(model.tvalues), "p":round(model.pvalues, 5)})
+    return df_parameters
+
